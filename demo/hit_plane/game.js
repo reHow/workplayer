@@ -54,6 +54,28 @@ class Player extends Flying{
         super(x,y,"./assets/plane.png")
         this.img.classList.add("player")
         this.life=3
+        this.speedX=14
+        this.speedY=12
+    }
+    move(x,y){
+        if(Math.abs(this.x-x)>this.speedX){
+            if(this.x>x){
+                this.x-=this.speedX
+            }else{
+                this.x+=this.speedX
+            }
+        }else{
+            this.x=x
+        }
+        if(Math.abs(this.y-y)>this.speedY){
+            if(this.y>y){
+                this.y-=this.speedY
+            }else{
+                this.y+=this.speedY
+            }
+        }else{
+            this.y=y
+        }
     }
 }
 class Enemy extends Flying{
@@ -66,11 +88,10 @@ class Enemy extends Flying{
     step(player){
         this.y+=this.speedY
         if(this.isCrashOther(player)){
-            this.life--
-            player.life--
-            if(this.life<=0){
-                this.dead=true
-            }
+            --this.life
+            --player.life
+            this.dead=this.life<=0
+            player.dead=player.life<=0
         }
     }
 }
@@ -83,22 +104,19 @@ class Bullet extends Flying{
     }
     step(enemies){
         this.y-=this.speedY
-        enemies.forEach(enemy => {
+        forEach(enemies,enemy=>{
             if(this.life>0 && enemy.life>0 && enemy.isCrashPoint(this.x,this.y)){
-                this.life--
-                enemy.life--
-                if(enemy.life<=0){
-                    enemy.dead=true
-                }
-                if(this.life<=0){
-                    this.dead=true
-                }
+                --this.life,--enemy.life
+                enemy.dead=enemy.life<=0
+                this.dead=this.life<=0
             }
-        });
+        })
     }
 }
 class Game{
     gameboard=dq(".gaming")
+    scorePoint=dq(".score-point")
+    lifePoint=dq(".life-point")
     pointX
     pointY
     player
@@ -110,15 +128,22 @@ class Game{
     animate
     gameover
     updateTime
-    gapBullet=5
-    gapEnemy=5
-    gapCount=0
+    createBulletGap
+    createEnemyGap
+    gameStepGap
     constructor(){
         this.updateTime=50
+        this.createBulletTime=10
+        this.createEnemyTime=2000
+        this.gameStepGap=100
         this.pointHandle=this.pointHandle.bind(this)
         this.keyboardHandle=this.keyboardHandle.bind(this)
         this.animateHandle=this.animateHandle.bind(this)
         this.timerHandle=this.timerHandle.bind(this)
+        //this.createBullets=throttle(this.createBullets,this.createBulletGap)
+        //this.createEnemy=throttle(this.createEnemy,this.createEnemyGap)
+        this.gameStep=throttle(this.gameStep,this.gameStepGap)
+
         this.clearGame()
         this.gameStart()
     }
@@ -127,40 +152,36 @@ class Game{
         this.pointY=e.clientY
     }
     timerHandle(){
-        this.player.x=this.pointX
-        this.player.y=this.pointY
-        this.gapCount++
-        if(this.gapCount%this.gapBullet===0){
-            this.createBullets()
-            this.bullets.filter(i=>!i.dead)
-            this.bullets.forEach(i=>i.step(this.enemies))
-        }
-        if(this.gapCount%this.gapEnemy===0){
-            this.createEnemy()
-            this.enemies.filter(i=>!i.dead)
-            this.enemies.forEach(i=>{
-                i.step(this.player)
-                if(i.dead){
-                    i.img.remove()
-                }
-                
-            })
-        }
+        this.createBullets()
+        this.createEnemy()
+        this.gameStep()
+        this.checkOutBullets()
+        this.checkClearBullets()
+        this.checkClearEneny()
         if(this.player.dead){
             this.gameOver()
-            console.log("gameOver")
-        }
-        if(this.gapCount===this.MAX_GAP){
-            this.gapCount=0
         }
     }
-    checkOut(){
-        this.enemies.forEach(i=>{
-            if(i.y<this.MIN_Y){
-                i.img.remove()
-                i.dead=true
-            }
-        })
+    gameStep(){
+        this.player.move(this.pointX,this.pointY)
+        forEach(this.bullets,i=>i.step(this.enemies))
+        forEach(this.enemies,i=>i.step(this.player))
+    }
+    checkOutBullets(){
+        forEach([...this.bullets],i=>{console.log(i,i.y);if(i.y<this.MIN_Y){i.dead=true}})
+    }
+    checkClearEneny(){
+        forEach(this.enemies.filter(i=>i.dead),i=>{this.updateScore(i.score),i.img.remove()})
+        this.enemies=this.enemies.filter(i=>!i.dead)
+    }
+    updateScore(score){
+        this.score+=score
+        this.scorePoint.innerHTML=this.score
+    }
+    checkClearBullets(){
+        forEach(this.bullets.filter(i=>i.dead),i=>{i.img.remove()})
+        this.bullets=this.bullets.filter(i=>!i.dead)
+        this.bullets.forEach(i=>i.step(this.enemies))
     }
     createBullets(){
         if(this.bullets.length<20){
@@ -177,9 +198,7 @@ class Game{
         }
     }
     animateHandle(){
-        this.player.draw()
-        this.enemies.forEach(i=>i.draw())
-        this.bullets.forEach(i=>i.draw())
+        forEach([this.player,...this.enemies,...this.bullets],i=>i.draw())
         requestAnimationFrame(this.animateHandle)
     }
     keyboardHandle(e){
@@ -200,7 +219,7 @@ class Game{
         this.clearGame()
         this.pointEventStart()
         this.keyboardEventStart()
-        this.player=new Player()
+        this.player=new Player(this.MAX_X/2,this.MAX_Y)
         this.gameboard.append(this.player.img)
         this.gameContinue()
     }
@@ -212,11 +231,12 @@ class Game{
     gamePause(e){
         clearInterval(this.timer)
         cancelAnimationFrame(this.animate)
-        this.keyboard.cancel(this.keyboard.node)
-        this.point.cancel(this.point.node)
+        this.pointEventCancel()
+        this.keyboardEventCancel()
     }
     gameOver(){
-
+        this.gamePause()
+        this.gameboard.classList.add("hide")
     }
     clearGame(){
         let flyings=dqAll(".flying")

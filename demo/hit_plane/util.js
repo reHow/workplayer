@@ -6,6 +6,21 @@ function getImgNode(src){
     return img
 }
 // util function
+/**
+ * 
+ * @param {Array} array 
+ * @param {Function} callback 
+ * @returns {Number} finally index
+ */
+function forEach(array,callback){
+    let index=0
+    for(index=0,length=array.length; index<length; ++index){
+        if(callback(array[index],index,array)===true){
+            break
+        }
+    }
+    return index
+}
 function numInArea(target,leftValue,rightValue){
     if(target>=leftValue && target<=rightValue){
         return true
