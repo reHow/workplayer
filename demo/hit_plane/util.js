@@ -7,7 +7,7 @@ function getImgNode(src){
 }
 // util function
 function numInArea(target,leftValue,rightValue){
-    if(target>leftValue && target<rightValue){
+    if(target>=leftValue && target<=rightValue){
         return true
     }
     return false
