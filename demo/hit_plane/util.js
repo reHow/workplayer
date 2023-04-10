@@ -13,13 +13,11 @@ function getImgNode(src){
  * @returns {Number} finally index
  */
 function forEach(array,callback){
-    let index=0
-    for(index=0,length=array.length; index<length; ++index){
+    for(let index=0,length=array.length; index<length; ++index){
         if(callback(array[index],index,array)===true){
-            break
+            return index
         }
     }
-    return index
 }
 function numInArea(target,leftValue,rightValue){
     if(target>=leftValue && target<=rightValue){
