@@ -4,17 +4,65 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEMO</title>
+    <base href="https://rehow.github.io">
+    <title>作品展示</title>
 </head>
 <body>
-    <h1>demo</h1>
-    <h2><a href="https://github.com/ReHow/resume/">本项目仓库</a></h2>
-    <img src="./assets/score.png" alt="学校成绩" srcset="">
-    <hr>
-    <h2>初次使用Canvas 23/04/07</h2>
-    <a href="./demo/hello,canvas.html">演示页面</a> <a href="https://github.com/ReHow/resume/blob/master/demo/hello%2Ccanvas.html">源码</a>
+    <nav>
+        <a href="https://github.com/ReHow/resume/raw/master/assets/score.png">SCHOOL REPORT</a>
+        <a href="https://github.com/ReHow/resume/">VIEW REPO</a>
+        <a href="/resume/about/index.html">ABOUT ME</a>
+        <a href="mailto:rehow0@outlook.com?subject=【HR称呼】我这里有一份适合你的职位要不要来试试看">I WANT YOU</a>
+    </nav>
+    <header><h1>作品展示</h1></header>
+    <main>
+        <article><a href="/resume/demo/hit_plane/index.html">打飞机小游戏（独立完成，无项目参考，Grid布局，使用原生DOM，用时一天完成主要功能，目前只适配电脑鼠标，欢迎试玩）</a></article>
+        <!-- <div><a href="/resume/demo/canvas/index.html">学习Canvas（目的是为了重新画我以前画过的一张壁纸，目前还没画出来，等做完更有说服力的项目再回来做）</a></div> -->
+    </main>
+    <footer>
+        &copy;rehow0@outlook.com
+    </footer>
 </body>
 <style>
-
+    body{
+        margin:0;
+        min-height: 100vh;
+    }
+    nav{
+        background-color: #69a;
+    }
+    nav a{
+        padding: 0 2em;
+        color: #fff;
+        text-decoration: none;
+    }
+    nav a:hover{
+        color: #000;
+    }
+    header{
+        background-color: #ffe;
+    }
+    header h1{
+        margin: 0;
+        padding: 10px;
+    }
+    main{
+        background-color: #eee;
+        padding: 0 10px;
+        min-height: 70vh;
+    }
+    main article a{
+        color: #69a;
+        line-height: 2em;
+    }
+    main article a:hover{
+        color: #9ab;
+        padding: .5em 0;
+    }
+    footer{
+        color: #fff;
+        background-color: #333;
+        min-height: 10vh;
+    }
 </style>
 </html>

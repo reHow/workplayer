@@ -7,7 +7,7 @@ function getImgNode(src){
 }
 // util function
 /**
- * 
+ * better forEach
  * @param {Array} array 
  * @param {Function} callback 
  * @returns {Number} finally index
@@ -47,11 +47,11 @@ function throttle(fn=new Function(),ms=9999){
     }
     return wrapper
 }
-function debounce(func, ms) {
+function debounce(fn=new Function, ms=9999) {
     let timeout;
     return function() {
       clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, arguments), ms);
+      timeout=setTimeout(()=>fn.apply(this,arguments),ms);
     };
   }
 function dqOne(cssStr){

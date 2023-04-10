@@ -142,8 +142,8 @@ class Game{
     MIN_Y=0
     constructor(){
         this.updateTime=100
-        this.createBulletGap=1000
-        this.createEnemyTime=2000
+        this.createBulletGap=800
+        this.createEnemyGap=500
         this.gameStepGap=100
         this.pointHandle=this.pointHandle.bind(this)
         this.keyboardHandle=this.keyboardHandle.bind(this)
@@ -239,7 +239,7 @@ class Game{
         this.animate=requestAnimationFrame(this.animateHandle)
     }
 
-    gamePause(e){
+    gamePause(){
         clearInterval(this.timer)
         cancelAnimationFrame(this.animate)
         this.pointEventCancel()
