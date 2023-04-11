@@ -31,6 +31,7 @@ body{
     width: 100vw;
     position: relative;
     overflow: hidden;
+    touch-action: none;
 }
 .gaming .info-board{
     position: absolute;
@@ -45,6 +46,8 @@ body{
     right: 0;
     bottom: 0;
     z-index: 100;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 .handle-up{
     grid-row: 1;

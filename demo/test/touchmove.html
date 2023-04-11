@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="shortcut icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50'/></svg>" type="image/x-icon">
+</head>
+<body>
+    <div class="app">
+        <div class="game-board">
+            <div class="controlled"></div>
+            <div class="vitual-rocker">
+                <div class="rocker-handle"></div>
+            </div>
+        </div>
+    </div>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .game-board{
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            background-color: #eee;
+        }
+        .controlled{
+            position: absolute;
+            left: 400px;
+            top: 200px;
+            height: 100px;
+            width: 100px;
+            background-color: #eaa;
+            border: 5px solid #e88;
+            border-radius: 100%;
+        }
+        .vitual-rocker{
+            position: absolute;
+            right: 50px;
+            bottom: 20px;
+            height: 175px;
+            width: 175px;
+            border: 1px dashed #000;
+            border-radius: 100%;
+            background-color: #7777;
+        }
+        .rocker-handle{
+            position: absolute;
+            left: calc(50% - 27px);
+            top: calc(50% - 27px);
+            height: 50px;
+            width: 50px; 
+            clip-path:circle(50% at 50% 50%);
+            background-color: #fff;
+            border: 4px solid #000;
+            border-radius: 100%;
+        }
+    </style>
+    <script>
+        const print=(...arg)=>console.log(...arg)
+        const not=bool=>!bool
+
+        const limitNum=(num,min,max)=>Math.min(Math.max(num,min),max)
+        const computedCssValue=(node,cssName)=>parseFloat(window.getComputedStyle(node).getPropertyValue(cssName))
+        const computedCssPos=node=>{return {x:computedCssValue(node,"left"),y:computedCssValue(node,"top")}}
+        const computedCssSize=node=>{return {w:computedCssValue(node,"width"),h:computedCssValue(node,"height"),
+                                            halfW:computedCssValue(node,"width")/2,halfH:computedCssValue(node,"height")/2,
+                                            doubleW:computedCssValue(node,"width")*2,doubleH:computedCssValue(node,"height")*2}}
+        const setCssValue=(node,cssName,value)=>node["style"][cssName]=value
+        const setCssPos=(node,pos)=>{setCssValue(node,"left",pos.x+"px");setCssValue(node,"top",pos.y+"px")}
+        const setCssPosLimit=(node,pos,size,minPos,maxPos,centerMode=true)=>{
+            let x=centerMode ? limitNum(pos.x,minPos.x-size.halfW,maxPos.x-size.halfW) : limitNum(pos.x,minPos.x,maxPos.x-size.w)
+            let y=centerMode ? limitNum(pos.y,minPos.y-size.halfH,maxPos.y-size.halfH) : limitNum(pos.y,minPos.y,maxPos.y-size.h)
+            setCssValue(node,"left",x+"px");
+            setCssValue(node,"top",y+"px")
+        }
+
+        const inCircle=(x,y,centerX,centerY,radius)=>Math.abs(x-centerX)**2 + Math.abs(y-centerY)**2 < radius**2
+        const inCirclePos=(pos,centerPos,radius)=>inCircle(pos.x,pos.y,centerPos.x,centerPos.y,radius)
+        const notInCirclePos=(pos,centerPos,radius)=>not(inCircle(pos.x,pos.y,centerPos.x,centerPos.y,radius))
+        const absTwoPos=(posA,posB)=>{return {x:Math.abs(posA.x-posB.x),y:Math.abs(posA.y-posB.y)}}
+        const addTwoPos=(posA,posB)=>{return {x:posA.x+posB.x, y:posA.y+posB.y}}
+        const subTwoPos=(posA,posB)=>{return {x:posA.x-posB.x, y:posA.y-posB.y}}
+        const dividePos=(pos,divisor)=>{return {x:pos.x/divisor,y:pos.y/divisor}}
+
+        const screenMaxPos=()=>{return {x:document.body.offsetWidth,y:document.body.offsetHeight}}
+        const screenMinPos=()=>{return {x:0,y:0}}
+
+        let rocker=document.querySelector(".vitual-rocker")
+        let handle=document.querySelector(".rocker-handle")
+        let controlled=document.querySelector(".controlled")
+        let rockerPos=computedCssPos(rocker)
+        let rockerSize=computedCssSize(rocker)
+        let handlePos=computedCssPos(handle)
+        let handleSize=computedCssSize(handle)
+        let controlledSize=computedCssSize(controlled)
+
+        handle.addEventListener("touchmove",e=>{
+            e.preventDefault()
+            let touch=e.touches[0]
+            let clientPos={x:touch.clientX,y:touch.clientY}
+            let newHandlePos={
+                x:clientPos.x-rockerPos.x-handleSize.halfW,
+                y:clientPos.y-rockerPos.y-handleSize.halfH
+            }
+            if(notInCirclePos(newHandlePos,handlePos,rockerSize.halfW)){
+                return
+            }
+            let speed=subTwoPos(newHandlePos,handlePos)
+            let newControlledPos=addTwoPos(computedCssPos(controlled),speed)
+
+            setCssPosLimit(controlled,newControlledPos,controlledSize,screenMinPos(),screenMaxPos(),false)
+            setCssPos(handle,newHandlePos)
+        })
+        handle.addEventListener("touchend",e=>{
+            setCssPos(handle,handlePos)
+        })
+    </script>
+</body>
+</html>

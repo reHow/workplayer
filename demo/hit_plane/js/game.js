@@ -63,6 +63,12 @@ class Player extends Flying{
         this.speedX=14
         this.speedY=12
     }
+    get doubleSpeedX(){
+        return this.speedX*2
+    }
+    get doubleSpeedY(){
+        return this.speedY*2
+    }
     move(x,y){
         if(Math.abs(this.x-x)>this.speedX){
             if(this.x>x){
@@ -133,6 +139,7 @@ class Game{
         keyboad:dq("use-keyboard"),
         screenHandle:dq("use-screnn-handle")
     }
+    screenHandleBoard=dq(".screen-handle")
     screenHandle={
         up:dq(".handle-up"),
         left:dq(".handle-left"),
@@ -140,9 +147,13 @@ class Game{
         down:dq(".handle-down")
     }
     eventHandle={
-        pointmove:null,
-        pointdown:null,
-        keydown:null
+        pointermove:null,
+        pointerdown:null,
+        touchstart:null,
+        keypress:null
+    }
+    eventSetting={
+        pointdown:null
     }
     pageSwitch
     pointX
@@ -241,39 +252,88 @@ class Game{
     handleBind(){
         this.animateHandle=this.animateHandle.bind(this)
         this.timerHandle=this.timerHandle.bind(this)
-        this.eventHandle.pointmove=(function(e){
+        this.eventHandle.pointermove=(function(e){
             this.pointX=e.clientX
             this.pointY=e.clientY
         }).bind(this)
-        this.eventHandle.keydown=(function(e){
+        this.eventHandle.keypress=(function(e){
             let key=e.key.toLowerCase()
             if(key==="a"){
-                this.pointX=this.player.x-this.player.speedX*2
+                this.pointX=this.player.x-this.player.doubleSpeedX
             }else if(key==="d"){
-                this.pointX=this.player.x+this.player.speedX*2
+                this.pointX=this.player.x+this.player.doubleSpeedX
             }else if(key==="w"){
-                this.pointY=this.player.y-this.player.speedY*2
+                this.pointY=this.player.y-this.player.doubleSpeedY
             }else if(key==="s"){
-                this.pointY=this.player.y+this.player.speedY*2
+                this.pointY=this.player.y+this.player.doubleSpeedY
+            }
+        }).bind(this)
+        this.eventHandle.touchstart=(function(startEvent){
+            startEvent.preventDefault()
+            timerHandle=timerHandle.bind(this)
+            moveHandle=throttle(moveHandle.bind(this),1000)
+            let {up,left,right,down}=this.screenHandle
+            let screenHandleBoard=this.screenHandleBoard
+            let player=this.player
+
+            let gameHandle=null
+            updateHandle(startEvent.target)
+
+            screenHandleBoard.addEventListener("touchmove",moveHandle)
+            screenHandleBoard.addEventListener("touchend",endHandle)
+            let timerID=setTimeout(timerHandle,this.updateTime)
+
+            function timerHandle(){
+                switch (gameHandle) {
+                    case up:
+                        this.pointY=player.y-player.doubleSpeedY
+                        break;
+                    case left:
+                        this.pointX=player.x-player.doubleSpeedX
+                        break;
+                    case right:
+                        this.pointX=player.x+player.doubleSpeedX
+                        break;
+                    case down:
+                        this.pointY=player.y+player.doubleSpeedY
+                        break;
+                    default:
+                        break;
+                }
+                timerID=setTimeout(timerHandle,this.updateTime)
+            }
+            function updateHandle(newTarget){
+                if(newTarget===up || newTarget===left || newTarget===right || newTarget===down){
+                    gameHandle=newTarget
+                }
+            }
+            function moveHandle(moveEvent){
+                moveEvent.preventDefault()
+                updateHandle(moveEvent.target)
+            }
+            function endHandle(endEvent){
+                endEvent.preventDefault()
+                screenHandleBoard.addEventListener("touchmove",moveHandle)
+                screenHandleBoard.addEventListener("touchend",endHandle)
+                clearTimeout(timerID)
             }
         }).bind(this)
     }
-    pointmoveStart(){
-        this.gamePage.addEventListener("pointermove",this.eventHandle.pointmove)
+    eventHandleAdd(){
+        //this.gamePage.addEventListener("pointermove",this.eventHandle.pointermove)
+        this.gamePage.addEventListener("pointerdown",this.eventHandle.pointerdown)
+        this.screenHandleBoard.addEventListener("touchstart",this.eventHandle.touchstart)
+        document.body.addEventListener("keypress",this.eventHandle.keypress)
     }
-    pointmoveCancel(){
-        this.gamePage.removeEventListener("pointermove",this.eventHandle.pointmove)
-    }
-    keydownStart(){
-        document.body.addEventListener("keypress",this.eventHandle.keydown)
-    }
-    keydownCancel(){
-        document.body.removeEventListener("keypress",this.eventHandle.keydown)
+    eventHandleRemove(){
+        this.gamePage.removeEventListener("pointermove",this.eventHandle.pointermove)
+        this.gamePage.removeEventListener("pointerdown",this.eventHandle.pointerdown)
+        this.screenHandleBoard.removeEventListener("touchstart",this.eventHandle.touchstart)
+        document.body.removeEventListener("keypress",this.eventHandle.keypress)
     }
     gameStart(){
         this.clearGame()
-        this.pointmoveStart()
-        this.keydownStart()
+        this.eventHandleAdd()
         this.player=new Player(this.MAX_X/2,this.MAX_Y)
         this.gamePage.append(this.player.img)
         this.gameContinue()
@@ -281,15 +341,15 @@ class Game{
     gameContinue(){
         this.timer=setInterval(this.timerHandle,this.updateTime)
         this.animate=requestAnimationFrame(this.animateHandle)
+        this.eventHandleAdd()
     }
 
     gamePause(){
         clearInterval(this.timer)
-        this.timer=null
         cancelAnimationFrame(this.animate)
+        this.timer=null
         this.animate=null
-        this.pointmoveCancel()
-        this.keydownCancel()
+        this.eventHandleRemove()
     }
     gameOver(){
         this.gamePause()
