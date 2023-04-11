@@ -140,11 +140,9 @@ class Game{
         down:dq(".handle-down")
     }
     eventHandle={
-        switchPlayerHandle:()=>{},
-        touchPlayerMove:()=>{},
-        pointPlayerMove:()=>{},
-        keyPlayerMove:()=>{},
-        keyGamePause:()=>{}
+        pointmove:null,
+        pointdown:null,
+        keydown:null
     }
     pageSwitch
     pointX
@@ -243,29 +241,39 @@ class Game{
     handleBind(){
         this.animateHandle=this.animateHandle.bind(this)
         this.timerHandle=this.timerHandle.bind(this)
-        this.eventHandle.pointPlayerMove=(function(e){
+        this.eventHandle.pointmove=(function(e){
             this.pointX=e.clientX
             this.pointY=e.clientY
         }).bind(this)
-        this.eventHandle.keyPlayerMove=(function(e){
-
+        this.eventHandle.keydown=(function(e){
+            let key=e.key.toLowerCase()
+            if(key==="a"){
+                this.pointX=this.player.x-this.player.speedX*2
+            }else if(key==="d"){
+                this.pointX=this.player.x+this.player.speedX*2
+            }else if(key==="w"){
+                this.pointY=this.player.y-this.player.speedY*2
+            }else if(key==="s"){
+                this.pointY=this.player.y+this.player.speedY*2
+            }
         }).bind(this)
     }
-    handlePointStart(){
-        this.gamePage.addEventListener("pointermove",this.eventHandle.pointPlayerMove)
+    pointmoveStart(){
+        this.gamePage.addEventListener("pointermove",this.eventHandle.pointmove)
     }
-    handlePointCancel(){
-        this.gamePage.removeEventListener("pointermove",this.eventHandle.pointPlayerMove)
+    pointmoveCancel(){
+        this.gamePage.removeEventListener("pointermove",this.eventHandle.pointmove)
     }
-    handleKeyStart(){
-        document.body.addEventListener("keydown",this.keyboardHandle)
+    keydownStart(){
+        document.body.addEventListener("keypress",this.eventHandle.keydown)
     }
-    handleKeyCancel(){
-        document.body.removeEventListener("keydown",this.keyboardHandle)
+    keydownCancel(){
+        document.body.removeEventListener("keypress",this.eventHandle.keydown)
     }
     gameStart(){
         this.clearGame()
-        this.handlePointStart()
+        this.pointmoveStart()
+        this.keydownStart()
         this.player=new Player(this.MAX_X/2,this.MAX_Y)
         this.gamePage.append(this.player.img)
         this.gameContinue()
@@ -277,9 +285,11 @@ class Game{
 
     gamePause(){
         clearInterval(this.timer)
+        this.timer=null
         cancelAnimationFrame(this.animate)
-        this.handlePointCancel()
-        this.handleKeyCancel()
+        this.animate=null
+        this.pointmoveCancel()
+        this.keydownCancel()
     }
     gameOver(){
         this.gamePause()
