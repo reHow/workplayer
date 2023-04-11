@@ -323,9 +323,6 @@ function testStart(){
         pageGaming()
         game.gameStart()
     }
-    dq(".game-start-btn").addEventListener("pointerdown",e=>{
-        pageGaming()
-        game.gameStart()
-    })
+    dq(".game-start-btn").addEventListener("pointerdown",gameStart)
     dq(".game-retry-btn").addEventListener("pointerdown",gameStart)
 })()
