@@ -86,22 +86,48 @@
         const subTwoPos=(posA,posB)=>{return {x:posA.x-posB.x, y:posA.y-posB.y}}
         const dividePos=(pos,divisor)=>{return {x:pos.x/divisor,y:pos.y/divisor}}
 
-        const screenMaxPos=()=>{return {x:document.body.offsetWidth,y:document.body.offsetHeight}}
-        const screenMinPos=()=>{return {x:0,y:0}}
-
         let rocker=document.querySelector(".vitual-rocker")
         let handle=document.querySelector(".rocker-handle")
         let controlled=document.querySelector(".controlled")
-        let rockerPos=computedCssPos(rocker)
+
         let rockerSize=computedCssSize(rocker)
-        let handlePos=computedCssPos(handle)
         let handleSize=computedCssSize(handle)
         let controlledSize=computedCssSize(controlled)
 
-        handle.addEventListener("touchmove",e=>{
+        let screenMinPos={x:0,y:0}
+        let screenMaxPos={x:document.body.offsetWidth,y:document.body.offsetHeight}
+        let rockerPos=computedCssPos(rocker)
+        let handlePos=computedCssPos(handle)
+
+        window.addEventListener("resize",e=>{
+            screenMaxPos={x:document.body.offsetWidth,y:document.body.offsetHeight}
+            rockerPos=computedCssPos(rocker)
+            handlePos=computedCssPos(handle)
+        })
+        handle.addEventListener("touchmove",handleMove)
+        handle.addEventListener("mousedown",e=>{
+            handle.addEventListener("mousemove",handleMove)
+            handle.addEventListener("mouseup",handleRemove)
+            function handleRemove(e){
+                setCssPos(handle,handlePos)
+                handle.removeEventListener("mousemove",handleMove)
+                handle.removeEventListener("mouseup",handleRemove)
+            }
+        })
+        handle.addEventListener("touchend",e=>{
+            setCssPos(handle,handlePos)
+        })
+        function handleMove(e){
             e.preventDefault()
-            let touch=e.touches[0]
-            let clientPos={x:touch.clientX,y:touch.clientY}
+            let clientPos
+
+            if(e.type==="touchmove"){
+                let touch=e.touches[0]
+                clientPos={x:touch.clientX,y:touch.clientY}
+            }else if(e.type==="mousemove"){
+                clientPos={x:e.clientX,y:e.clientY}
+            }
+
             let newHandlePos={
                 x:clientPos.x-rockerPos.x-handleSize.halfW,
                 y:clientPos.y-rockerPos.y-handleSize.halfH
@@ -112,12 +138,9 @@
             let speed=subTwoPos(newHandlePos,handlePos)
             let newControlledPos=addTwoPos(computedCssPos(controlled),speed)
 
-            setCssPosLimit(controlled,newControlledPos,controlledSize,screenMinPos(),screenMaxPos(),false)
+            setCssPosLimit(controlled,newControlledPos,controlledSize,screenMinPos,screenMaxPos,false)
             setCssPos(handle,newHandlePos)
-        })
-        handle.addEventListener("touchend",e=>{
-            setCssPos(handle,handlePos)
-        })
+        }
     </script>
 </body>
 </html>
