@@ -119,12 +119,33 @@ class Bullet extends Flying{
     }
 }
 class Game{
-    gameboard=dq(".gaming")
-    scorePoint=dq(".score-point")
-    lifePoint=dq(".life-point")
-    finllyPoint=dq(".finlly-score-point")
+    gamePage=dq(".gaming")
     overPage=dq(".game-over")
     pages=dq(".app [class*='page-']")
+    point={
+        score:dq(".score-point"),
+        life:dq(".life-point"),
+        hard:dq(".hard-point"),
+        finally:dq(".finlly-score-point")
+    }
+    handleType={
+        point:dq("use-point"),
+        keyboad:dq("use-keyboard"),
+        screenHandle:dq("use-screnn-handle")
+    }
+    screenHandle={
+        up:dq(".handle-up"),
+        left:dq(".handle-left"),
+        right:dq(".handle-right"),
+        down:dq(".handle-down")
+    }
+    eventHandle={
+        switchPlayerHandle:()=>{},
+        touchPlayerMove:()=>{},
+        pointPlayerMove:()=>{},
+        keyPlayerMove:()=>{},
+        keyGamePause:()=>{}
+    }
     pageSwitch
     pointX
     pointY
@@ -143,28 +164,28 @@ class Game{
     MIN_X=0
     MIN_Y=0
     constructor(){
+        this.handleBind()
         this.pageSwitch=page=>pageSwitch.apply(null,[page,this.pages]) // 偏函数
 
         this.updateTime=100
         this.createBulletGap=800
         this.createEnemyGap=500
         this.gameStepGap=100
-        this.pointHandle=this.pointHandle.bind(this)
-        this.keyboardHandle=this.keyboardHandle.bind(this)
-        this.animateHandle=this.animateHandle.bind(this)
-        this.timerHandle=this.timerHandle.bind(this)
+        
         this.createBullets=throttle(this.createBullets,this.createBulletGap)
         this.createEnemy=throttle(this.createEnemy,this.createEnemyGap)
         this.gameStep=throttle(this.gameStep,this.gameStepGap)
     }
-    pointHandle(e){
-        this.pointX=e.clientX
-        this.pointY=e.clientY
+    animateHandle(){
+        forEach([this.player,...this.enemies,...this.bullets],i=>i.draw())
+        requestAnimationFrame(this.animateHandle)
     }
     timerHandle(){
+        // status save
         let life=this.player.life
+        let hard=this.hard
         // step & check
-        this.player.move(this.pointX,this.pointY)        
+        this.player.move(this.pointX,this.pointY)
         forEach(this.bullets,bullet=>{
             bullet.step(this.enemies)
             if(bullet.y<this.MIN_Y || bullet.life<=0){
@@ -175,7 +196,7 @@ class Game{
             enemy.step(this.player)
             if(enemy.life<=0){
                 this.score+=enemy.score
-                this.scorePoint.innerText=this.score
+                this.point.score.innerText=this.score
                 enemy.remove()
             }else if(enemy.y>this.MAX_Y){
                 enemy.remove()
@@ -187,52 +208,66 @@ class Game{
         // create
         this.createBullets()
         this.createEnemy()
+        // score bouns
+        if(this.score>1000 && this.score%1000===0){
+            ++this.player.life
+            ++this.hard
+        }
+        // status check
         // life check
         if(this.player.life!==life){
-            this.lifePoint.innerText=this.player.life
+            this.point.life.innerText=this.player.life
         }
         if(this.player.life<=0){
             this.gameOver()
+        }
+        // hard check
+        if(this.hard!==hard){
+            this.point.hard.innerText=this.hard
         }
     }
     createBullets(){
         if(this.bullets.length<20){
             let bullet=new Bullet(this.player.x,this.player.y)
-            this.gameboard.append(bullet.img)
+            this.gamePage.append(bullet.img)
             this.bullets.push(bullet)
         }
     }
     createEnemy(){
         if(this.enemies.length<this.hard){
             let enemy=new Enemy(parseInt(Math.random()*this.MAX_X),0)
-            this.gameboard.append(enemy.img)
+            this.gamePage.append(enemy.img)
             this.enemies.push(enemy)
         }
     }
-    animateHandle(){
-        forEach([this.player,...this.enemies,...this.bullets],i=>i.draw())
-        requestAnimationFrame(this.animateHandle)
+    handleBind(){
+        this.animateHandle=this.animateHandle.bind(this)
+        this.timerHandle=this.timerHandle.bind(this)
+        this.eventHandle.pointPlayerMove=(function(e){
+            this.pointX=e.clientX
+            this.pointY=e.clientY
+        }).bind(this)
+        this.eventHandle.keyPlayerMove=(function(e){
+
+        }).bind(this)
     }
-    keyboardHandle(e){
+    handlePointStart(){
+        this.gamePage.addEventListener("pointermove",this.eventHandle.pointPlayerMove)
     }
-    pointEventStart(){
-        this.gameboard.addEventListener("pointermove",this.pointHandle)
+    handlePointCancel(){
+        this.gamePage.removeEventListener("pointermove",this.eventHandle.pointPlayerMove)
     }
-    keyboardEventStart(){
+    handleKeyStart(){
         document.body.addEventListener("keydown",this.keyboardHandle)
     }
-    pointEventCancel(){
-        this.gameboard.removeEventListener("pointermove",this.pointHandle)
-    }
-    keyboardEventCancel(){
+    handleKeyCancel(){
         document.body.removeEventListener("keydown",this.keyboardHandle)
     }
     gameStart(){
         this.clearGame()
-        this.pointEventStart()
-        this.keyboardEventStart()
+        this.handlePointStart()
         this.player=new Player(this.MAX_X/2,this.MAX_Y)
-        this.gameboard.append(this.player.img)
+        this.gamePage.append(this.player.img)
         this.gameContinue()
     }
     gameContinue(){
@@ -243,13 +278,13 @@ class Game{
     gamePause(){
         clearInterval(this.timer)
         cancelAnimationFrame(this.animate)
-        this.pointEventCancel()
-        this.keyboardEventCancel()
+        this.handlePointCancel()
+        this.handleKeyCancel()
     }
     gameOver(){
         this.gamePause()
         this.pageSwitch(this.overPage)
-        this.finllyPoint.innerText=this.score
+        this.point.finally.innerText=this.score
     }
     clearGame(){
         let flyings=dqAll(".flying")
@@ -268,26 +303,29 @@ class Game{
         this.gameover=false
         this.pointX=this.MAX_X/2
         this.pointY=this.MAX_Y
-        this.scorePoint.innerText=0
-        this.lifePoint.innerText=3
+        this.point.score.innerText=0
+        this.point.life.innerText=3
     }
     get MAX_X(){return document.body.offsetWidth}
     get MAX_Y(){return document.body.offsetHeight}
 }
 
+testStart()
+function testStart(){
+    pageSwitch(dq(".gaming"),dq(".app [class*='page-']"));
+    (new Game()).gameStart();
+}
 
 (()=>{
     let game=new Game()
-    let pages=dq(".app [class*='page-']")
-    let gamimg=dq(".gaming")
-    let gameover=dq(".game-over")
+    let pageGaming=()=>{pageSwitch(dq(".gaming"),dq(".app [class*='page-']"))}
+    let gameStart=()=>{
+        pageGaming()
+        game.gameStart()
+    }
     dq(".game-start-btn").addEventListener("pointerdown",e=>{
-        console.log(e)
-        pageSwitch(gamimg,pages)
+        pageGaming()
         game.gameStart()
     })
-    dq(".game-retry-btn").addEventListener("pointerdown",e=>{
-        pageSwitch(gamimg,pages)
-        game.gameStart()
-    })
+    dq(".game-retry-btn").addEventListener("pointerdown",gameStart)
 })()

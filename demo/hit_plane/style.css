@@ -32,6 +32,39 @@ body{
     position: relative;
     overflow: hidden;
 }
+.gaming .info-board{
+    position: absolute;
+    z-index: 99;
+}
+.gaming .screen-handle{
+    height: 200px;
+    width: 200px;
+    position: absolute;
+    display: grid;
+    grid: repeat(3,1fr)/repeat(3,1fr);
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+}
+.handle-up{
+    grid-row: 1;
+    grid-column: 2;
+}
+.handle-left{
+    grid-row: 2;
+    grid-column: 1;
+}
+.handle-right{
+    grid-row: 2;
+    grid-column: 3;
+}
+.handle-down{
+    grid-row: 3;
+    grid-column: 2;
+}
+.gaming .player{
+    z-index: 98;
+}
 .gaming .flying{
     transition: linear;
     position: absolute;
@@ -52,5 +85,5 @@ body{
     line-height: 45vh;
 }
 .hide{
-    display: none;
+    display: none!important;
 }
