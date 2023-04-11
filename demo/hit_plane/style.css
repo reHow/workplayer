@@ -38,6 +38,19 @@ body{
     user-select: none;
     -webkit-user-drag: none;
 }
+.game-over{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #777;
+    color: #fff;
+}
+.game-over>*{
+    flex-grow: 1;
+    text-align: center;
+    font-size: 10vh;
+    line-height: 45vh;
+}
 .hide{
     display: none;
 }

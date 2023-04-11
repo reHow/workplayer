@@ -124,6 +124,8 @@ class Game{
     lifePoint=dq(".life-point")
     finllyPoint=dq(".finlly-score-point")
     overPage=dq(".game-over")
+    pages=dq(".app [class*='page-']")
+    pageSwitch
     pointX
     pointY
     player
@@ -141,6 +143,8 @@ class Game{
     MIN_X=0
     MIN_Y=0
     constructor(){
+        this.pageSwitch=page=>pageSwitch.apply(null,[page,this.pages]) // 偏函数
+
         this.updateTime=100
         this.createBulletGap=800
         this.createEnemyGap=500
@@ -152,9 +156,6 @@ class Game{
         this.createBullets=throttle(this.createBullets,this.createBulletGap)
         this.createEnemy=throttle(this.createEnemy,this.createEnemyGap)
         this.gameStep=throttle(this.gameStep,this.gameStepGap)
-
-        this.clearGame()
-        this.gameStart()
     }
     pointHandle(e){
         this.pointX=e.clientX
@@ -247,9 +248,8 @@ class Game{
     }
     gameOver(){
         this.gamePause()
-        this.gameboard.classList.add("hide")
+        this.pageSwitch(this.overPage)
         this.finllyPoint.innerText=this.score
-        this.overPage.classList.remove("hide")
     }
     clearGame(){
         let flyings=dqAll(".flying")
@@ -268,8 +268,26 @@ class Game{
         this.gameover=false
         this.pointX=this.MAX_X/2
         this.pointY=this.MAX_Y
+        this.scorePoint.innerText=0
+        this.lifePoint.innerText=3
     }
     get MAX_X(){return document.body.offsetWidth}
     get MAX_Y(){return document.body.offsetHeight}
 }
-new Game()
+
+
+(()=>{
+    let game=new Game()
+    let pages=dq(".app [class*='page-']")
+    let gamimg=dq(".gaming")
+    let gameover=dq(".game-over")
+    dq(".game-start-btn").addEventListener("pointerdown",e=>{
+        console.log(e)
+        pageSwitch(gamimg,pages)
+        game.gameStart()
+    })
+    dq(".game-retry-btn").addEventListener("pointerdown",e=>{
+        pageSwitch(gamimg,pages)
+        game.gameStart()
+    })
+})()

@@ -5,7 +5,17 @@ function getImgNode(src){
     img.src=src
     return img
 }
-// util function
+/**
+ * 
+ * @param {Node} page 
+ * @param {NodeList} pages 
+ * @param {String} hideClass 
+ */
+function pageSwitch(page,pages,hideClass="hide"){
+    forEach([...pages],p=>p.classList.add(hideClass))
+    page.classList.remove(hideClass)
+}
+// pure util function
 /**
  * better forEach
  * @param {Array} array 

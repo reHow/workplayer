@@ -10,20 +10,20 @@
 </head>
 <body>
     <div class="app">
-        <div class="game-start page-1 hide">
+        <div class="game-start page-1">
             <h1 class="game-title">Hit Plane</h1>
-            <div class="game-operation"><button>Game Start</button></div>
+            <div class="game-operation"><button class="game-start-btn">Game Start</button></div>
         </div>
-        <div class="gaming page-2">
+        <div class="gaming page-2 hide">
             <div class="score">SCROE:<span class="score-point">0</span></div>
             <div class="life">LIFE:<span class="life-point">3</span></div>
         </div>
         <div class="game-over page-3 hide">
             <div class="finlly-score">Finlly Score:<span class="finlly-score-point">0</span></div>
-            <button class="restart-game">Retry</button>
+            <button class="game-retry-btn">Retry</button>
         </div>
     </div>
-    <script src="util.js"></script>
-    <script src="game.js"></script>
+    <script src="./js/util.js"></script>
+    <script src="./js/game.js"></script>
 </body>
 </html>

@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .board{
+            display: inline-block;
+            width: 500px;
+            height: 500px;
+            border: 1px solid black;
+            user-select: none;
+        }
+        .flag{
+            font-size: calc(500px / 3);
+            width: 32.5%;
+            height: 32.5%;
+            display: inline-block;
+            border: 1px solid black;
+            vertical-align:bottom;
+            align-items: center;
+            text-align: center;
+            line-height: 100%;
+        }
+        .control{
+            display: inline-block;
+        }
+    </style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp} = Vue
+        const setup={
+            components:{},
+            data(){return{
+                flags:"000000000",
+                flagChar:["","X","O"],
+                now:1,
+                winner:0,
+                wins:[0b111000000,0b000111000,0b000000111,0b100100100,0b010010010,0b001001001,0b100010001,0b001010100],
+                history:[]
+            }},
+            template:null,
+            methods:{
+                newFlag(idx){
+                    if(this.winner!==0||this.flags[idx]!=0){return}
+                    this.history.push([this.flags,this.now,this.winner])
+                    this.flags=insert(String(this.flags),String(this.now),idx)
+                    this.now=this.now===1?2:1
+                    for(let length=this.wins.length,i=0;i<length;++i){
+                        let win=this.wins[i]
+                        if((strGetBin(this.flags,1)&win)===win){
+                            this.winner=1
+                        }else if((strGetBin(this.flags,2)&win)===win){
+                            this.winner=2
+                        }
+                    }
+                },
+                back(){
+                    [this.flags,this.now,this.winner]=this.history.pop()??[this.flags,this.now,this.winner]
+                },
+                newplay(){
+                    [this.flags,this.now,this.winner,this.history]=["000000000",1,0,[]]
+                },
+                range
+            }
+        }
+        createApp(setup).mount('.vuejs')
+        function* range(start,end){
+            if(start>end){
+                [start,end]=[end,start]
+            }
+            for(let i=start;i<end;++i){
+                yield i
+            }
+        }
+        function insert(str,char,idx){
+            let nstr=[...str]
+            nstr[idx]=char
+            return nstr.join("")
+        }
+        function strGetBin(str,sltChar) {
+            return +("0b"+[...str].map(i=>i===""+sltChar?1:0).join(""))
+        }
+    </script>
+</head>
+<body>
+    <div class="vuejs">
+        <h1 v-if="winner!==0">Winner is ：{{ flagChar[winner] }}</h1>
+        <h1 v-else>Next Player:{{ flagChar[now] }}</h1>
+        <div class="board">
+            <span
+                class="flag"
+                v-for="idx in range(0,9)"
+                @click="newFlag(idx)"
+                >
+                {{flagChar[flags[idx]]}}
+            </span>
+        </div>
+        <div class="control">
+            <button @click="back()">上一步</button>
+            <button @click="newplay()">新一局</button>
+        </div>
+    </div>
+</body>
+</html>
