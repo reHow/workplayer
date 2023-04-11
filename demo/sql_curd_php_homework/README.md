@@ -3,6 +3,8 @@
 开发环境 Mysql + Ngnix + PHP7
 ## Mysql
 addr: localhost
+
 user: root
+
 pwd:【留空】
 ![程序预览](https://github.com/ReHow/resume/raw/master/demo/sql_curd_php_homework/main-page.png "预览")
