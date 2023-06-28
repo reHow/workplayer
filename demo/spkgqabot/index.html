@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Knowledge QA Bot</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <style>
+        body{
+            margin: 0;
+            background-color: aliceblue;
+        }
+        #app{
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .msgs{
+            height: 100%;
+            flex-grow: 1;
+            background-color: #eee;
+            overflow-y:auto;
+            white-space: pre-wrap;
+        }
+        .prequestions{
+            white-space: nowrap;
+            overflow-x: auto;
+            user-select: none;
+        }
+        .prequestion{
+            border-left: 2px solid #000;
+            padding: 10px;
+            background-color: azure;
+        }
+        .msgs .receive .msg,
+        .msgs .send .msg{
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .msgs .send .msg{
+            color: #000;
+            background-color: #54ff45;
+        }
+        .msgs .send{
+            text-align: right;
+        }
+        .input-warpper{
+            display: flex;
+            width: 100%;
+        }
+        .input-warpper input{
+            flex-grow: 1;
+        }
+        .send-input input{
+            line-height: 3em;
+            font-size: 24px;
+        }
+        .send-input button.send{
+            font-size: 20px;
+            width: 5em;
+        }
+    </style>
+    <div id="app">
+        <div ref="msgsBox" class="msgs">
+            <div :class="{'msg-warpper':true,[i['type']]:true}" v-for="i in msgs">
+                <div class="msg">{{ i['value'] }}</div>
+            </div>
+        </div>
+        <div class="send-input">
+            <div>试试这些问题：</div>
+            <div class="prequestions">
+                <button @click="applyMsg(idx)" class="prequestion" v-for="(i,idx) in prequestion">{{ i }}</button>
+            </div>
+            <div class="input-warpper">
+                <input class="userinput" ref="sendinput" @keydown="e=>e.key==='Enter'?send(e):null" v-model="sendmsg" type="text">
+                <button class="send" @click="send">提问</button>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        Vue.createApp({
+            setup(props) {
+                const prequestion=['乳腺癌的症状有哪些？','最近老流鼻涕怎么办？','为什么有的人会失眠？','失眠有哪些并发症？','失眠的人不要吃啥？','耳鸣了吃点啥？','哪些人最好不好吃蜂蜜？','鹅肉有什么好处？','肝病要吃啥药？','板蓝根颗粒能治啥病？','脑膜炎怎么才能查出来？','全血细胞计数能查出啥来？','怎样才能预防肾虚？','感冒要多久才能好？','高血压要怎么治？','白血病能治好吗？','什么人容易得高血压？','糖尿病']
+                const sendmsg=Vue.ref("乳腺癌的症状有哪些？")
+                const msgs=Vue.ref([{
+                    "type":"receive",
+                    "value":"请提问"
+                }])
+                const msgsBox=Vue.ref(null)
+                const sendinput=Vue.ref(null)
+                const bottom=()=>Vue.nextTick(()=>msgsBox.value.scrollTop=msgsBox.value.scrollHeight)
+                const send=e=>{
+                    if(sendmsg.value.length===0) return
+                    const el=e.target
+                    el.innerText="请稍等…"
+                    el.disabled=true
+                    msgs.value.push({
+                        type:"send",
+                        value:sendmsg.value
+                    })
+                    bottom()
+                    fetch("https://d0a52687.usaki.top/api/v1/qabot",{
+                        method:"POST",
+                        mode:"cors",
+                        body:sendmsg.value
+                    }).then(rqs=>{
+                        if(rqs.status===200){
+                            return rqs.text()
+                        }else{
+                            alert("请求失败")
+                        }
+                    })
+                    .then(text=>{
+                        msgs.value.push({
+                            type:"receive",
+                            value:text
+                        })
+                        bottom()
+                     })
+                    .catch(err=>{
+                        alert("oops！遇到了错误")
+                    })
+                    .finally(()=>{
+                        el.innerText="提问"
+                        el.disabled=false
+                        sendmsg.value=""
+                    })
+                }
+                const applyMsg=idx=>{
+                    sendmsg.value=prequestion[idx]
+                    sendinput.value.focus()
+                }
+                return {msgs,send,prequestion,sendmsg,applyMsg,msgsBox,sendinput}
+            }
+        }).mount("#app")
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hit plane</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="app">
+        <div class="game-page-start">
+            <h1 class="game-title">打飞机</h1>
+            <button class="game-start-btn">开始</button>
+        </div>
+
+        <div class="game-page-play hide">
+            <div class="play-status">
+                <div class="score">分数:<span class="score-point">0</span></div>
+                <div class="hard">难度:<span class="hard-point">5</span></div>
+                <div class="life">生命:<span class="life-point">3</span></div>
+                <div class="input-type">
+                    <button class="use-pointer enable">指针</button>
+                    <button class="use-keyboard">键盘</button>
+                    <button class="use-vitual-rocker">虚拟手柄</button>
+                </div>
+            </div>
+            <div class="vitual-rocker">
+                <div class="rocker-handle"></div>
+            </div>
+        </div>
+        
+        <div class="game-page-over hide">
+            <div class="finally-score">最终得分:<span class="finlly-score-point">99999</span></div>
+            <button class="game-retry-btn">再来一次</button>
+        </div>
+    </div>
+    <script src="./js/util.js"></script>
+    <script src="./js/game.js"></script>
+</body>
+
+</html>

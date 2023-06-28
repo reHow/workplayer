@@ -1,0 +1,92 @@
+html,body,.game-title,.gaming>img{
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: aliceblue;
+}
+.app{
+    background-color: antiquewhite;
+}
+:root{
+    --color:#66ccff;
+}
+.game-start{
+    display: grid;
+    grid: repeat(4,1fr)/repeat(3,1fr);
+    text-align: center;
+    height: 100vh;
+    width: 100vw;
+}
+.game-title{
+    grid-row: 2/2;
+    grid-column: 2/2;
+}
+.game-operation{
+    grid-row: 3/3;
+    grid-column: 2/2;
+}
+.gaming{
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    overflow: hidden;
+    touch-action: none;
+}
+.gaming .info-board{
+    position: absolute;
+    z-index: 99;
+}
+.gaming .screen-handle{
+    height: 200px;
+    width: 200px;
+    position: absolute;
+    display: grid;
+    grid: repeat(3,1fr)/repeat(3,1fr);
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.handle-up{
+    grid-row: 1;
+    grid-column: 2;
+}
+.handle-left{
+    grid-row: 2;
+    grid-column: 1;
+}
+.handle-right{
+    grid-row: 2;
+    grid-column: 3;
+}
+.handle-down{
+    grid-row: 3;
+    grid-column: 2;
+}
+.gaming .player{
+    z-index: 98;
+}
+.gaming .flying{
+    transition: linear;
+    position: absolute;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.game-over{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #777;
+    color: #fff;
+}
+.game-over>*{
+    flex-grow: 1;
+    text-align: center;
+    font-size: 10vh;
+    line-height: 45vh;
+}
+.hide{
+    display: none!important;
+}

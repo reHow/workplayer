@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="app">
+        <div>{{ msg + " " + cnt }}</div>
+        <div>x:{{mouse.x}} y:{{mouse.y}}</div>
+        <btn @click="add"></btn>
+        <div>
+            <button @click="pageto">page:{{pageIndex+1}} </button>
+            <component :is="currentView"></component>
+        </div>
+    </div>
+    <script src="./js/vue.global.js"></script>
+    <script>
+        const { reactive, ref, createApp, onMounted, onUnmounted, computed } = Vue
+
+        const useEventListener = (target, event, callback) => {
+            onMounted(() => target.addEventListener(event, callback))
+            onUnmounted(() => target.removeEventListener(event, callback))
+        }
+
+        const useMouse = () => {
+            const [x, y] = [ref(0), ref(0)]
+            useEventListener(window, 'mousemove', e => [x.value, y.value] = [e.clientX, e.clientY])
+            return { x, y }
+        }
+        const btn = {
+            template: `<button ref="button">add</button>`,
+            setup() {
+                const button = ref(null)
+                onMounted(() => {
+                    button.value.focus()
+                    console.log(button)
+                })
+                return {
+                    button
+                }
+            }
+        }
+        createApp({
+            components: {
+                btn,
+                page1: { template: `<div>组件页1</div>` },
+                page2: { template: `<div>组件页2</div>` },
+                page3: { template: `<div>组件页3</div>` }
+            },
+            setup() {
+                let msg = 'hello,world'
+                const cnt = ref(0)
+                function add() {
+                    ++cnt.value
+                }
+
+                const attrs=["page1","page2","page3"]
+                const pageIndex = ref(0)
+                const currentView = computed(
+                    () => attrs[pageIndex.value]
+                )
+                const pageto = () => {
+                    pageIndex.value = ++pageIndex.value % attrs.length
+                }
+                return {
+                    mouse: reactive(useMouse()),
+                    msg,
+                    cnt,
+                    add,
+                    pageto,
+                    pageIndex,
+                    currentView
+                }
+            }
+        }).mount('.app')
+    </script>
+</body>
+
+</html>

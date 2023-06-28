@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"> -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReHow的简历</title>
+</head>
+
+<body>
+    <main class="markdown-it"></main>
+    <footer>
+        rendered by <a href="https://github.com/markdown-it/markdown-it">markdownit</a>
+    </footer>
+    <script>
+        const renderTo = document.querySelector('.markdown-it')
+        const loadUrl = {
+            axios: "https://unpkg.com/axios/dist/axios.min.js",
+            mdit: "https://unpkg.com/markdown-it@latest/dist/markdown-it.min.js"
+        }
+
+        const loadScript = src => new Promise((resolve, reject) => {
+            const script = document.createElement('script')
+            script.src = src
+            script.onload = () => resolve(script)
+            script.onerror = () => reject(new Error(`Failed load script for url:${src}`))
+            document.head.append(script)
+        })
+
+        renderTo.innerText = '正在从unpkg.com加载脚本'
+        loadScript(loadUrl.mdit)
+            .then(() => loadScript(loadUrl.axios))
+            .then(() => axios.get("./README.md"))
+            .then(respon => {
+                renderTo.innerText = 'Mardown加载完毕'
+                return respon.data
+            })
+            .then(text => {
+                renderTo.innerHTML = (new markdownit()).render(text).replaceAll('href="/', 'href="/resume/')
+            })
+            .catch(err => {
+                renderTo.innerText = '网页加载失败，错误信息：\n' + err
+                console.error(err)
+            })
+
+    </script>
+</body>
+
+</html>

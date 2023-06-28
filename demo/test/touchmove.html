@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>move circle</title>
+    <link rel="shortcut icon"
+        href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50'/></svg>"
+        type="image/x-icon">
+</head>
+
+<body>
+    <div class="app">
+        <div class="game-board">
+            <div class="controlled"></div>
+            <div class="vitual-rocker">
+                <div class="rocker-handle"></div>
+            </div>
+        </div>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-board {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            background-color: #eee;
+        }
+
+        .controlled {
+            position: absolute;
+            left: calc(50% - 52px);
+            top: calc(50% - 52px);
+            height: 100px;
+            width: 100px;
+            background-color: #eaa;
+            border: 5px solid #e88;
+            border-radius: 100%;
+        }
+
+        .vitual-rocker {
+            position: absolute;
+            right: 10vw;
+            bottom: 20vh;
+            height: 175px;
+            width: 175px;
+            border: 1px dashed #000;
+            border-radius: 100%;
+            background-color: #7777;
+        }
+
+        .rocker-handle {
+            position: absolute;
+            left: calc(50% - 27px);
+            top: calc(50% - 27px);
+            height: 50px;
+            width: 50px;
+            clip-path: circle(50% at 50% 50%);
+            background-color: #fff;
+            border: 4px solid #000;
+            border-radius: 100%;
+        }
+    </style>
+    <script>
+        const print = console.log
+        const not = bool => !bool
+        const limitNum = (num, min, max) => Math.min(Math.max(num, min), max)
+
+        // size:{w,h,halfW,halfH,doubleW,doubleH} pos:{x,y}
+        const getPos = (x, y) => { return { x: x, y: y } }
+        const getSize = (w, h) => { return { w: w, h: h, halfW: w / 2, halfH: h / 2, doubleW: w * 2, doubleH: h * 2 } }
+        const computedCssValue = (node, cssName) => parseFloat(window.getComputedStyle(node)[cssName])
+        const computedCssPos = node => getPos(computedCssValue(node, "left"), computedCssValue(node, "top"))
+        const computedCssSize = node => {
+            w = computedCssValue(node, "width") + computedCssValue(node, "borderLeftWidth") + computedCssValue(node, "borderRightWidth")
+            h = computedCssValue(node, "height") + computedCssValue(node, "borderTopWidth") + computedCssValue(node, "borderBottomWidth")
+            return getSize(w, h)
+        }
+        const setCssValue = (node, cssName, value) => node["style"][cssName] = value
+        const setCssPos = (node, pos) => { setCssValue(node, "left", pos.x + "px"); setCssValue(node, "top", pos.y + "px") }
+        const setCssPosLimit = (node, pos, size, minPos, maxPos, centerMode = true) => {
+            let x = centerMode ? limitNum(pos.x, minPos.x - size.halfW, maxPos.x - size.halfW) : limitNum(pos.x, minPos.x, maxPos.x - size.w)
+            let y = centerMode ? limitNum(pos.y, minPos.y - size.halfH, maxPos.y - size.halfH) : limitNum(pos.y, minPos.y, maxPos.y - size.h)
+            setCssValue(node, "left", x + "px");
+            setCssValue(node, "top", y + "px")
+        }
+
+        const originPos = getPos(0, 0)
+
+        const inCircle = (x, y, centerX, centerY, radius) => Math.abs(x - centerX) ** 2 + Math.abs(y - centerY) ** 2 < radius ** 2
+        const inCirclePos = (pos, centerPos, radius) => inCircle(pos.x, pos.y, centerPos.x, centerPos.y, radius)
+        const notInCirclePos = (pos, centerPos, radius) => not(inCircle(pos.x, pos.y, centerPos.x, centerPos.y, radius))
+        const absTwoPos = (posA, posB) => getPos(Math.abs(posA.x - posB.x), Math.abs(posA.y - posB.y))
+        const addTwoPos = (posA, posB) => getPos(posA.x + posB.x, posA.y + posB.y)
+        const subTwoPos = (posA, posB) => getPos(posA.x - posB.x, posA.y - posB.y)
+        const dividePos = (pos, divisor) => getPos(parseInt(pos.x / divisor), parseInt(pos.y / divisor))
+        const multiplePos = (pos, multipler) => getPos(parseInt(pos.x * multipler), parseInt(pos.y * multipler))
+
+        const limitPosInCircle = (pos, centerPos, radius) => {
+            let stdPos = subTwoPos(pos, centerPos), stdPosRaius = Math.sqrt(stdPos.x ** 2 + stdPos.y ** 2)
+            return stdPosRaius <= radius ? stdPos : dividePos(stdPos, stdPosRaius / radius)
+        }
+
+        let screenMinPos = originPos
+        let screenMaxPos = getPos(document.body.offsetWidth, document.body.offsetHeight)
+
+        let controlled = document.querySelector(".controlled")
+        let rocker = document.querySelector(".vitual-rocker")
+        let stick = document.querySelector(".rocker-handle")
+
+        let controlledSize = computedCssSize(controlled)
+        let rockerSize = computedCssSize(rocker)
+        let stickSize = computedCssSize(stick)
+
+        let rockerPos = computedCssPos(rocker)
+        let stickPos = computedCssPos(stick)
+
+        // 处理事件监听
+        window.addEventListener("resize", e => {
+            screenMaxPos = getPos(document.body.offsetWidth, document.body.offsetHeight)
+            rockerPos = computedCssPos(rocker)
+            stickPos = computedCssPos(stick)
+        })
+        stick.addEventListener("touchstart", stickHandleAdd)
+        stick.addEventListener("mousedown", stickHandleAdd)
+
+        // 事件函数
+        let moveTimer = null
+        let speed = getPos(0, 0)
+        // 魔数
+        const SpeedRadio = 0.2
+        const RockerRangeRadio = 1.5
+
+        function stickHandleAdd(e) {
+            eventGourp = {
+                touchstart: { move: "touchmove", up: "touchend" },
+                mousedown: { move: "mousemove", up: "mouseup" }
+            }
+            e.preventDefault()
+            moveTimer = requestAnimationFrame(controlledMove)
+            window.addEventListener(eventGourp[e.type]["move"], stickMove)
+            window.addEventListener(eventGourp[e.type]["up"], srickHandleRemove)
+        }
+
+        function srickHandleRemove(e) {
+            eventGourp = {
+                touchend: { move: "touchmove", up: "touchend" },
+                mouseup: { move: "mousemove", up: "mouseup" }
+            }
+            e.preventDefault()
+            cancelAnimationFrame(moveTimer)
+            setCssPos(stick, stickPos)
+            window.removeEventListener(eventGourp[e.type]["move"], stickMove)
+            window.removeEventListener(eventGourp[e.type]["up"], srickHandleRemove)
+        }
+
+        function controlledMove() {
+            let newControlledPos = addTwoPos(computedCssPos(controlled), speed)
+            setCssPosLimit(controlled, newControlledPos, controlledSize, screenMinPos, screenMaxPos, false)
+            moveTimer = requestAnimationFrame(controlledMove)
+        }
+
+        function stickMove(e) {
+            e.preventDefault()
+            let clientPos
+            switch (e.type) {
+                case "touchmove":
+                    let touch = e.touches[0]
+                    clientPos = getPos(touch.clientX, touch.clientY)
+                    break
+                case "mousemove":
+                    clientPos = getPos(e.clientX, e.clientY)
+                    break;
+            }
+            let rockerRadius = rockerSize.halfW * RockerRangeRadio
+            let rockerCenter = getPos(rockerSize.halfW, rockerSize.halfH)
+            let clientInRockerPos = subTwoPos(clientPos, rockerPos)
+            // 【鼠标在Rocker的坐标】裁切成圆形，裁切函数会标准化圆到原点坐标，需要位移
+            let clientInRockerCirclePos = addTwoPos(limitPosInCircle(clientInRockerPos, rockerCenter, rockerRadius), rockerCenter)
+            // Stick中心 向左上移动原点 原点 重合的偏移坐标
+            let stickCenterOffsetPos = getPos(-stickSize.halfW, -stickSize.halfH)
+            // Stick中心在【鼠标在Rocker的坐标】上时，Stick的坐标
+            let newStickPos = addTwoPos(clientInRockerCirclePos, stickCenterOffsetPos)
+            speed = multiplePos(subTwoPos(newStickPos, stickPos), SpeedRadio)
+            setCssPos(stick, newStickPos)
+        }
+    </script>
+</body>
+
+</html>

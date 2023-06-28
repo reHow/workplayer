@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello,Canvas</title>
+</head>
+<body onload="draw()" style="margin: 0;padding: 0;background-color: aliceblue;">
+    <canvas style="margin: 0;padding: 0;background-color: antiquewhite;border: 1px solid #000;" class="hello-canvas" width="700" height="700">
+        <h1>Hello,Canvas</h1>
+        <p>here is picture about hello canvas.</p>
+        <p>and your browser not support canvas tag,please use lasest firefox/chrome to see the picture.</p>
+    </canvas>
+    <script lang="ts">
+        const draw=()=>{
+            const canvas=document.querySelector(".hello-canvas")
+            if(!canvas){
+                throw new Error("SUPPORT:browser is not suppot canvas!")
+            }
+            const init2d=(context)=>{
+                const defaultBackgroundColor="#fff"
+                const defaultFillStyle="#000"
+                const defaultstrokeStyle="#000"
+                //context.clearRect(0,0,canvas.width,canvas.height)// 清空画布后，背景为style背景色，默认透明
+                context.fillStyle=defaultBackgroundColor
+                context.fillRect(0,0,canvas.width,canvas.height)
+                context.fillStyle=defaultFillStyle
+                context.strokeStyle=defaultstrokeStyle
+            }
+            const draw2ds=[
+                // 矩形
+                context=>{
+                    context.fillStyle="#8a77"
+                    context.fillRect(10,10,200,100)
+                    context.fillStyle="#87a7"
+                    context.fillRect(30,30,100,200)
+                    context.strokeStyle="#ee4f"
+                    context.strokeRect(30,30,100,200)
+                },
+                // 三角形
+                context=>{
+                    context.beginPath()
+                    context.moveTo(0,0)
+                    context.lineTo(canvas.width/2,canvas.height/2)
+                    context.lineTo(canvas.width,0)
+                    context.fill()
+                },
+                // 笑脸
+                context=>{
+                    context.beginPath()
+
+                    context.moveTo(200,125)
+                    context.arc(150,125,50,0,Math.PI*2,true)
+
+                    context.moveTo(350,125)
+                    context.arc(300,125,50,0,Math.PI*2,true)
+
+                    //context.moveTo(225,225) 有欺骗视觉的效果
+                    context.moveTo(300,225)
+                    context.arc(225,225,75,0,Math.PI,false)
+
+                    context.moveTo(400,175)
+                    context.arc(225,180,175,0,Math.PI*2,true)
+
+                    context.stroke()
+                },
+                // 色板
+                context=>{
+                    let react={w:canvas.width/16,h:canvas.height/16}
+                    for(let row=0,rend=16;row<=rend;++row){
+                        for(let col=0,cend=16;col<=cend;++col){
+                            context.fillStyle=`#${row.toString(16)}0${col.toString(16)}`
+                            context.fillRect(
+                                row*react.w,
+                                col*react.h,
+                                react.w,
+                                react.h
+                                )
+                        }
+                    }
+                }
+            ]
+            /**
+             *  max,min:0~255 颜色范围，rgb共用一个范围
+             */
+            const getRandomInt=(max,min=0)=>Math.floor(Math.random()*(max-min>0?max-min:1)-min)
+            const randomInt=(max,min=0)=>parseInt(min)+parseInt(Math.random()*(max-min))
+            const dec2hex=strdec=>{
+                let dec=parseInt(strdec)
+                if(isNaN(dec)){
+                    return strdec
+                }
+                return dec.toString(16)
+            }
+            const randomIntHex=(max,min=0)=>dec2hex(randomInt(max,min))
+            const getRandomColor=(max,min=0)=>`#${randomIntHex(max,min).padStart(2,'0')}${randomIntHex(max,min).padStart(2,'0')}${randomIntHex(max,min).padStart(2,'0')}${randomIntHex(max,min).padStart(2,'0')}`
+            const context=canvas.getContext('2d')
+            for(let index=0,end=draw2ds.length;index<end;++index){
+                init2d(context)
+                draw2ds[index](context)
+            }
+        }
+    </script>
+</body>
+</html>
