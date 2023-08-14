@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.staticfile.org/echarts/5.4.3/echarts.min.js"></script>
+</head>
+<body style="margin: 0;">
+    <button class="more">more</button><button class="less">less</button><span>数量：<span class="cnt">1</span></span>
+    <div id="main" style="width: 100vw;height:90vh;"></div>
+    <script>
+        var src={"ACB1": ["OLE1", "POX1", "ERG10", "POT1"], "ACC1": ["ACS1", "CIT2", "CEM1", "OLE1", "POX1", "ELO1", "FAS1", "TGL4", "ACS2", "PAH1", "HFA1", "FAA4", "TGL3", "LAT1", "MLS1", "CIT1", "LRO1", "FAA1", "CIT3", "DGA1", "MCT1", "ERG10", "FAS2"], "ACP1": ["IFA38", "PCS60", "QCR7", "CEM1", "SIP4", "YJU3", "AIM45", "LPX1", "LIP2", "SAL1", "QCR2", "CYT1", "RRN11", "BUD22", "MCT1"], "ACS1": ["DCI1", "ECI1", "UGA1", "CAT2", "ICL2", "HFA1", "LAT1", "ICL1", "FOX2", "ACC1", "HFD1", "ACS2", "POT1", "ALD5", "ERG10", "POX1", "ALD3", "ALD2", "ALD4", "CIT1", "ALD6", "CIT2", "MLS1", "CIT3"], "ACS2": ["ACS1", "PCS60", "CIT2", "ICL1", "ALD5", "POX1", "UGA1", "POT1", "FOX2", "ICL2", "HFA1", "LAT1", "HFD1", "ACC1", "ALD4", "MLS1", "CIT1", "ALD3", "CIT3", "ALD2", "ERG10", "ALD6"], "ADH6": ["ADH7", "GPP2", "ALD5", "GUT1", "GPP1", "YJU3", "HFD1", "ALD3", "ALD2", "GCY1", "ALD4", "ALD6"], "ADH7": ["GPP2", "YJU3", "GUT1", "GPP1", "HFD1", "GCY1", "ALD5", "ALD2", "ALD3", "ALD4", "ALD6", "ADH6"], "AIM33": ["OLE1", "CYB5"], "AIM45": ["POX1", "CIR1", "GUT2", "POT1", "ACP1", "ECI1", "DCI1", "ERG10"], "ALD2": ["ACS1", "ADH7", "POX1", "UGA1", "FOX2", "ACS2", "ADH6"], "ALD3": ["ACS1", "ADH7", "POX1", "UGA1", "GUT1", "GUT2", "FOX2", "ACS2", "ADH6"], "ALD4": ["ACS1", "ADH7", "POX1", "UGA1", "GUT1", "GUT2", "FOX2", "ACS2", "ADH6", "CIT1", "ALD6"], "ALD5": ["ACS1", "ADH7", "POX1", "UGA1", "ADH6", "ACS2"], "ALD6": ["ACS1", "CIT2", "ADH7", "POX1", "UGA1", "FOX2", "ACS2", "ADH6", "ALD4", "ERG10"], "ALE1": ["SCT1", "CDS1", "SLC1", "DPP1", "LPP1", "PHM8", "AYR1", "GUT2", "GPT2", "TGL4", "PAH1", "FAA4", "TGL3", "LRO1", "ARE2", "TGL5", "FAA1", "DGA1", "DGK1", "LOA1"], "ARE1": ["LPP1", "DPP1", "PAH1", "LRO1", "DGA1", "ARE2"], "ARE2": ["ARE1", "DPP1", "LPP1", "TGL1", "TGL4", "YEH1", "YEH2", "SEI1", "PAH1", "TGL3", "LRO1", "FAA1", "TGL5", "ALE1", "DGA1"], "ATG15": ["DPP1", "LPP1", "PHM8", "PAH1", "LRO1", "TGL2", "DGA1", "YJU3", "TGL5", "CYB5", "TGL3", "TGL4"], "AYR1": ["SCT1", "FAT1", "IFA38", "SLC1", "LRO1", "DGA1", "TGL1", "TGL3", "TGL4", "TGL5", "ALE1", "LOA1", "GPT2"], "BUD22": ["QCR7", "YJU3", "ACP1", "RRN11", "ECM16", "LPX1", "SAL1", "QCR2", "CYT1"], "CAT2": ["ACS1", "CIT2", "PEX5", "CTA1", "FAA2", "ICL1", "POX1", "POT1", "TES1", "FOX2", "ECI1", "ICL2", "MLS1", "SPS19", "CIT3"], "CDS1": ["SCT1", "DGA1", "INO1", "GPT2", "LRO1", "TGL5", "TGL4", "LPP1", "LOA1", "DPP1", "SLC1", "DGK1", "ALE1", "PAH1"], "CEM1": ["ETR1", "ELO2", "SLC1", "ACC1", "LIP2", "HTD2", "ELO3", "ELO1", "HFA1", "FAS1", "FAS2", "ACP1", "OAR1", "MCT1"], "CIR1": ["POX1", "DCI1", "ECI1", "AIM45"], "CIT1": ["ACS1", "CIT2", "IDP1", "ICL1", "TDH3", "POT1", "FAS1", "ACS2", "HFA1", "IDP3", "LAT1", "MLS1", "ALD4", "CYT1", "ACC1", "ICL2", "ERG10", "CIT3"], "CIT2": ["ACS1", "FOX2", "ALD6", "FAS1", "HFA1", "ACC1", "CAT2", "ICL2", "ICL1", "POT1", "IDP1", "IDP3", "CIT3", "ERG10", "LAT1", "CIT1", "ACS2", "MLS1"], "CIT3": ["ACS1", "CIT2", "IDP1", "ICL1", "POX1", "POT1", "FAS1", "FOX2", "ACS2", "CAT2", "HFA1", "IDP3", "LAT1", "MLS1", "CIT1", "ACC1", "ERG10", "ICL2"], "CTA1": ["PRE7", "PEX5", "PXP1", "PXA1", "PEX14", "FAA2", "TES1", "CAT2", "POT1", "ECI1", "SPS19", "FOX2", "POX1"], "CYB5": ["ATG15", "OLE1", "ERG25", "ERG1", "ERG11", "AIM33", "ERG5"], "CYC8": ["FAT1", "KAR3"], "CYT1": ["QCR7", "GUT2", "TIM17", "YJU3", "ACP1", "RRN11", "BUD22", "CIT1", "LPX1", "QCR2"], "DCI1": ["ACS1", "PCS60", "POX1", "CIR1", "POT1", "TES1", "FOX2", "ECI1", "SPS19", "AIM45", "ERG10"], "DGA1": ["SCT1", "CDS1", "FAT1", "LDB16", "ARE1", "ATG15", "SLC1", "TGL2", "PEX10", "DPP1", "YFT2", "LPP1", "PHM8", "OLE1", "POX1", "AYR1", "YJU3", "TGL1", "FAS1", "PET10", "GPT2", "TGL4", "YEH1", "YEH2", "SEI1", "PAH1", "FAA4", "TGL3", "LRO1", "ACC1", "ARE2", "TGL5", "ALE1", "FAS2", "LOA1", "FAA1", "DGK1"], "DGK1": ["SCT1", "CDS1", "SLC1", "DPP1", "LPP1", "SPT23", "TGL4", "PAH1", "LRO1", "TGL5", "ALE1", "DGA1", "LOA1"], "DPP1": ["SCT1", "CDS1", "ARE1", "ATG15", "SLC1", "TGL2", "ARE2", "GUT2", "GPT2", "LPP1", "TGL5", "LOA1", "TGL4", "TGL3", "ALE1", "DGK1", "LRO1", "DGA1", "PAH1"], "ECI1": ["ACS1", "PEX5", "CTA1", "FAA2", "POX1", "CIR1", "POT1", "TES1", "PXA2", "FOX2", "PEX11", "MLS1", "AIM45", "PXA1", "CAT2", "ERG10", "SPS19", "DCI1"], "ECM16": ["BUD22", "FAA4"], "EHT1": ["FAT1", "YJU3", "FAA1"], "ELO1": ["IFA38", "ELO2", "TSC13", "CEM1", "OLE1", "PHS1", "ACC1", "FAS1", "FAS2", "ELO3"], "ELO2": ["IFA38", "FAS2", "CEM1", "PHS1", "TSC13", "OLE1", "ELO3", "ELO1"], "ELO3": ["IFA38", "ELO2", "TSC13", "SUR2", "CEM1", "OLE1", "ERG25", "PHS1", "ELO1", "ERG3", "SCS7"], "ERG1": ["OLE1", "ERG25", "CYB5", "ERG10", "HMG1", "ERG27", "ERG3", "ERG5", "ERG11", "ERG9", "ERG7"], "ERG10": ["ACS1", "IFA38", "CIT2", "POX1", "ACB1", "ERG25", "ERG1", "ERG11", "ERG7", "ERG9", "POT1", "FOX2", "ERG3", "ERG27", "ACS2", "ECI1", "HMG1", "ERG5", "HFA1", "LAT1", "MLS1", "CIT1", "ACC1", "DCI1", "ALD6", "AIM45", "CIT3"], "ERG11": ["OLE1", "ERG25", "ERG1", "ERG5", "SCS7", "HMG1", "ERG10", "CYB5", "ERG3", "ERG7", "ERG9", "ERG27"], "ERG25": ["HEM13", "OLE1", "CYB5", "FAS1", "ELO3", "ERG10", "HMG1", "SCS7", "ERG27", "ERG5", "ERG3", "ERG11", "ERG1", "ERG9", "ERG7"], "ERG27": ["FAT1", "IFA38", "ERG25", "ERG1", "ERG11", "ERG7", "ERG9", "ERG3", "ERG10", "ERG5"], "ERG3": ["OLE1", "ERG25", "ERG1", "ERG11", "ERG7", "ERG9", "HMG1", "ELO3", "ERG10", "SCS7", "ERG5", "ERG27"], "ERG5": ["HEM13", "OLE1", "ERG25", "ERG1", "ERG11", "ERG7", "ERG9", "ERG3", "ERG27", "HMG1", "SCS7", "CYB5", "ERG10"], "ERG7": ["FAT1", "IFA38", "ERG25", "ERG1", "ERG11", "YEH1", "HMG1", "TGL1", "ERG10", "ERG3", "ERG27", "ERG5", "ERG9"], "ERG9": ["OLE1", "ERG25", "ERG1", "TDH3", "ERG11", "ERG7", "ERG5", "HMG1", "ERG10", "ERG3", "ERG27"], "ETR1": ["HFA1", "LIP2", "OAR1", "FAS2", "FAS1", "POX1", "CEM1", "HTD2"], "FAA1": ["FAT1", "EHT1", "TGL2", "FAA2", "OLE1", "POX1", "FAA3", "YJU3", "TGL1", "FAS1", "PXA2", "FOX2", "TGL4", "HFD1", "PAH1", "FAA4", "TGL3", "LRO1", "ACC1", "ARE2", "TGL5", "ALE1", "DGA1", "PXA1", "FAS2"], "FAA2": ["PRE7", "FAT1", "PCS60", "TGL2", "CTA1", "TGL4", "RPL5", "CAT2", "OLE1", "TGL5", "SPS19", "TGL3", "ECI1", "POT1", "YJU3", "FAA4", "FAA3", "FAA1", "FOX2", "PXA2", "PXA1", "FAS1", "FAS2", "PEX11", "POX1"], "FAA3": ["FAT1", "TGL2", "FAA2", "POX1", "TGL4", "TGL3", "FAA1", "FAA4", "YJU3", "FAS2", "FAS1"], "FAA4": ["FAT1", "TGL2", "FAA2", "OLE1", "POX1", "FAA3", "YJU3", "TGL1", "FAS1", "FOX2", "TGL4", "HMG1", "ECM16", "ACC1", "ALE1", "PXA1", "LRO1", "TGL5", "DGA1", "TGL3", "FAA1", "FAS2"], "FAS1": ["ETR1", "CIT2", "TMA17", "FAA2", "CEM1", "OLE1", "POX1", "ERG25", "HTD2", "FAA3", "ELO1", "OAR1", "DGA1", "LIP2", "CIT3", "LAT1", "CIT1", "MCT1", "FAA4", "HFA1", "FAA1", "ACC1", "FAS2"], "FAS2": ["ETR1", "ELO2", "TMA17", "FAA2", "CEM1", "OLE1", "HTD2", "FAA3", "ELO1", "OAR1", "FAS1", "LIP2", "HFA1", "FAA4", "LRO1", "ACC1", "MCT1", "DGA1", "FAA1"], "FAT1": ["ERG27", "TAH1", "CYC8", "SWA2", "SKG6", "TOS2", "YJU3", "PXA1", "DGA1", "EHT1", "POX1", "ERG7", "TGL3", "SLC1", "AYR1", "FAA2", "FAA3", "YEH1", "TGL1", "KAR3", "FAA4", "FAA1"], "FMP30": ["YJU3"], "FOX2": ["ACS1", "PCS60", "CIT2", "PEX5", "CTA1", "PXP1", "FAA2", "ICL1", "POX1", "HTD2", "POT1", "TES1", "PXA2", "ALD2", "FAA4", "ICL2", "SPS19", "PEX11", "CIT3", "FAA1", "ACS2", "ERG10", "MLS1", "DCI1", "ALD6", "ALD3", "ALD4", "PXA1", "ECI1", "CAT2"], "GCY1": ["ADH7", "GPP2", "GUT1", "GPP1", "YJU3", "ADH6"], "GDE1": ["SCT1", "GUT2", "YJU3", "GPT2"], "GPP1": ["SCT1", "ADH7", "GPP2", "GUT1", "YJU3", "ADH6", "GPT2", "GCY1"], "GPP2": ["SCT1", "ADH7", "YJU3", "GPT2", "ADH6", "GCY1", "GUT1", "GPP1"], "GPT2": ["SCT1", "CDS1", "SLC1", "DPP1", "LPP1", "PHM8", "GPP2", "GUT1", "GPP1", "AYR1", "GUT2", "LRO1", "GDE1", "DGA1", "PAH1", "TGL4", "TGL5", "LOA1", "ALE1"], "GUT1": ["SCT1", "ADH7", "GPP2", "ALD3", "ALD4", "ADH6", "YJU3", "GPT2", "GCY1", "GPP1", "GUT2"], "GUT2": ["SCT1", "SLC1", "DPP1", "LPP1", "POX1", "GUT1", "ALD3", "AIM45", "GDE1", "CYT1", "ALE1", "LOA1", "TGL5", "PAH1", "ALD4", "TGL4", "GPT2"], "HEM13": ["OLE1", "ERG5", "ERG25"], "HFA1": ["ACS1", "ETR1", "CIT2", "CEM1", "OLE1", "HTD2", "FAS1", "ACS2", "CIT3", "CIT1", "MLS1", "LAT1", "ACC1", "ERG10", "FAS2", "MCT1"], "HFD1": ["ACS1", "ADH7", "POX1", "UGA1", "PXA2", "ACS2", "FAA1", "ADH6"], "HMG1": ["OLE1", "ERG25", "ERG1", "ERG11", "ERG7", "ERG9", "ERG3", "FAA4", "ERG5", "ERG10"], "HTD2": ["ETR1", "PXP1", "CEM1", "HFA1", "MCT1", "FOX2", "FAS1", "FAS2", "OAR1"], "ICL1": ["ACS1", "CIT2", "IDP1", "CAT2", "POX1", "ACS2", "IDP3", "ICL2", "CIT1", "FOX2", "CIT3", "MLS1"], "ICL2": ["ACS1", "CIT2", "IDP1", "ICL1", "POX1", "FOX2", "ACS2", "CAT2", "IDP3", "MLS1", "CIT1", "CIT3"], "IDP1": ["CIT2", "POX1", "ICL2", "MLS1", "ICL1", "IDP3", "CIT1", "CIT3"], "IDP3": ["CIT2", "IDP1", "ICL1", "POX1", "ICL2", "MLS1", "CIT1", "CIT3"], "IFA38": ["ACP1", "ERG10", "AYR1", "ERG7", "ERG27", "OAR1", "OLE1", "ELO3", "ELO1", "ELO2", "PHS1", "TSC13"], "INO1": ["CDS1", "OLE1", "PAH1"], "IZH2": ["OLE1"], "KAR3": ["FAT1", "CYC8", "TAH1", "SWA2", "TOS2", "SKG6"], "LAT1": ["ACS1", "CIT2", "POT1", "FAS1", "ACS2", "HFA1", "ACC1", "MLS1", "ERG10", "CIT3", "CIT1"], "LDB16": ["YFT2", "DGA1", "PET10", "SEI1"], "LIP2": ["ETR1", "CEM1", "FAS1", "ACP1", "FAS2"], "LOA1": ["SCT1", "CDS1", "SLC1", "DPP1", "LPP1", "PHM8", "AYR1", "GUT2", "GPT2", "TGL4", "PAH1", "TGL5", "ALE1", "DGA1", "DGK1"], "LPP1": ["SCT1", "CDS1", "ARE1", "ATG15", "SLC1", "TGL2", "DPP1", "ARE2", "GUT2", "GPT2", "TGL5", "LOA1", "TGL4", "TGL3", "ALE1", "DGK1", "LRO1", "DGA1", "PAH1"], "LPX1": ["QCR7", "YJU3", "ACP1", "RRN11", "BUD22", "SAL1", "CYT1"], "LRO1": ["SCT1", "CDS1", "ARE1", "ATG15", "SLC1", "TGL2", "DPP1", "YFT2", "LPP1", "POX1", "AYR1", "TGL1", "GPT2", "TGL4", "YEH1", "YEH2", "SEI1", "PAH1", "FAA4", "TGL3", "FAS2", "ACC1", "DGK1", "FAA1", "ALE1", "TGL5", "ARE2", "DGA1"], "MCT1": ["CEM1", "HTD2", "OAR1", "FAS1", "ACP1", "HFA1", "ACC1", "FAS2"], "MGA2": ["OLE1", "SPT23"], "MGL2": ["YJU3"], "MLS1": ["ACS1", "CIT2", "IDP1", "ICL1", "POX1", "POT1", "SIP4", "FOX2", "ACS2", "ECI1", "CAT2", "HFA1", "IDP3", "LAT1", "ACC1", "ERG10", "CIT1", "CIT3", "ICL2"], "OAR1": ["ETR1", "IFA38", "CEM1", "HTD2", "FAS1", "FAS2", "MCT1"], "OLE1": ["IFA38", "ELO2", "TSC13", "HEM13", "SUR2", "FAA2", "TDH3", "INO1", "AIM33", "HFA1", "HMG1", "ERG9", "IZH2", "ERG5", "ERG1", "ERG3", "SCS7", "ERG25", "ACB1", "CYB5", "DGA1", "ERG11", "FAA1", "FAS2", "FAS1", "FAA4", "PHS1", "ACC1", "SPT23", "ELO3", "MGA2", "ELO1"], "PAH1": ["SCT1", "CDS1", "ARE1", "ATG15", "SLC1", "TGL2", "DPP1", "LPP1", "GUT2", "INO1", "GPT2", "TGL4", "SEI1", "ACC1", "FAA1", "ARE2", "TGL5", "LOA1", "TGL3", "ALE1", "LRO1", "DGA1", "DGK1"], "PCS60": ["PRE7", "FOX2", "DCI1", "PEX11", "POX1", "ACS2", "POT1", "FAA2", "PEX5", "PXP1", "ACP1"], "PET10": ["LDB16", "YFT2", "DGA1", "SEI1"], "PEX10": ["PRE7", "PEX7", "PEX5", "TES1", "DGA1", "PXA1", "POX1", "POT1", "PEX11", "PEX14", "PEX13", "PEX12"], "PEX11": ["PRE7", "PCS60", "PEX7", "PEX5", "PEX10", "FAA2", "PEX14", "POX1", "POT1", "PXA2", "FOX2", "PEX13", "ECI1", "PEX12"], "PEX12": ["PRE7", "PEX7", "PEX5", "PEX10", "PEX14", "POX1", "PEX13", "PEX11"], "PEX13": ["PRE7", "PEX7", "PEX5", "PEX10", "PEX14", "POX1", "POT1", "TES1", "PXA2", "PEX11", "PEX12"], "PEX14": ["PRE7", "PEX7", "PEX5", "CTA1", "PEX10", "POX1", "POT1", "PEX11", "PEX12", "PEX13"], "PEX5": ["PRE7", "PCS60", "PEX7", "SPS19", "TES1", "ECI1", "CTA1", "FOX2", "CAT2", "POT1", "POX1", "PXP1", "PEX11", "PEX14", "PEX12", "PEX10", "PEX13"], "PEX7": ["PRE7", "POX1", "PEX11", "PEX12", "PEX10", "PEX14", "PEX5", "POT1", "PEX13"], "PHM8": ["SCT1", "ATG15", "SLC1", "TGL2", "LOA1", "TGL3", "TGL4", "TGL5", "ALE1", "GPT2", "YJU3", "DGA1"], "PHS1": ["IFA38", "ELO2", "TSC13", "OLE1", "ELO3", "ELO1"], "POT1": ["ACS1", "PCS60", "CIT2", "PEX7", "PEX5", "CTA1", "PEX10", "FAA2", "PEX14", "POX1", "ACB1", "SPS19", "PEX11", "CAT2", "AIM45", "PEX13", "LAT1", "CIT1", "MLS1", "ERG10", "DCI1", "CIT3", "ECI1", "ACS2", "FOX2"], "POX1": ["ACS1", "PRE7", "ETR1", "FAT1", "PCS60", "IDP1", "PEX7", "PEX5", "CTA1", "PEX10", "PXP1", "FAA2", "ICL1", "ALD5", "PEX14", "TGL3", "IDP3", "LRO1", "CIR1", "PEX12", "GUT2", "FAS1", "AIM45", "FAA3", "CIT3", "ACB1", "ACC1", "PEX13", "ICL2", "DGA1", "UGA1", "MLS1", "DCI1", "PXA2", "TES1", "ALD2", "PEX11", "FAA4", "SPS19", "PXA1", "CAT2", "FAA1", "HFD1", "ECI1", "ACS2", "ALD3", "ALD6", "ERG10", "ALD4", "POT1", "FOX2"], "PRE7": ["CTA1", "FAA2", "PCS60", "POX1", "PEX11", "PEX12", "PEX14", "PEX10", "PEX13", "PEX7", "PEX5"], "PXA1": ["FAT1", "CTA1", "PEX10", "FAA2", "POX1", "PXA2", "FOX2", "ECI1", "FAA4", "FAA1"], "PXA2": ["FAA2", "POX1", "HFD1", "PEX13", "FAA1", "PEX11", "ECI1", "FOX2", "PXA1"], "PXP1": ["PCS60", "PEX5", "CTA1", "POX1", "FOX2", "TES1", "HTD2"], "QCR2": ["QCR7", "YJU3", "ACP1", "RRN11", "BUD22", "CYT1"], "QCR7": ["SAL1", "YJU3", "LPX1", "ACP1", "BUD22", "RRN11", "QCR2", "CYT1"], "ROG1": ["YJU3"], "RPL5": ["FAA2"], "RRN11": ["QCR7", "SIP4", "TIM17", "YJU3", "ACP1", "LPX1", "SAL1", "QCR2", "CYT1", "BUD22"], "SAL1": ["QCR7", "SIP4", "TIM17", "YJU3", "ACP1", "RRN11", "BUD22", "LPX1"], "SCS7": ["SUR2", "OLE1", "ERG25", "ERG11", "ERG3", "ELO3", "ERG5"], "SCT1": ["TGL3", "GDE1", "CDS1", "DGK1", "DGA1", "LRO1", "PHM8", "GPP1", "GPP2", "GUT1", "GUT2", "DPP1", "LPP1", "TGL5", "TGL4", "AYR1", "LOA1", "SLC1", "GPT2", "PAH1", "ALE1"], "SEI1": ["LDB16", "YFT2", "PET10", "ARE2", "PAH1", "LRO1", "DGA1"], "SIP4": ["MLS1", "ACP1", "YJU3", "RRN11", "SAL1"], "SKG6": ["FAT1", "KAR3"], "SLC1": ["SCT1", "CDS1", "FAT1", "LRO1", "CEM1", "GUT2", "DGA1", "PHM8", "TGL4", "LOA1", "TGL5", "AYR1", "PAH1", "DGK1", "LPP1", "DPP1", "GPT2", "ALE1"], "SPS19": ["PEX5", "CTA1", "FAA2", "POX1", "POT1", "TES1", "FOX2", "ECI1", "CAT2", "DCI1"], "SPT23": ["OLE1", "MGA2", "DGK1"], "SUR2": ["OLE1", "ELO3", "SCS7"], "SWA2": ["FAT1", "KAR3"], "TAH1": ["FAT1", "KAR3"], "TDH3": ["OLE1", "CIT1", "ERG9"], "TES1": ["TSC13", "PEX5", "CTA1", "PEX10", "PXP1", "POX1", "PEX13", "SPS19", "CAT2", "FOX2", "DCI1", "ECI1"], "TGL1": ["FAT1", "TGL2", "ERG7", "AYR1", "YJU3", "FAA1", "LRO1", "FAA4", "ARE2", "DGA1", "TGL3", "TGL5", "TGL4"], "TGL2": ["ATG15", "FAA4", "FAA2", "FAA3", "FAA1", "TGL1", "PHM8", "PAH1", "DPP1", "LPP1", "LRO1", "DGA1", "YJU3", "TGL5", "TGL4", "TGL3"], "TGL3": ["SCT1", "FAT1", "ATG15", "TGL2", "DPP1", "LPP1", "FAA2", "PHM8", "POX1", "FAA3", "AYR1", "YJU3", "TGL1", "TGL4", "YEH1", "YEH2", "PAH1", "FAA4", "ACC1", "ALE1", "ARE2", "FAA1", "TGL5", "LRO1", "DGA1"], "TGL4": ["SCT1", "CDS1", "ATG15", "SLC1", "TGL2", "DPP1", "LPP1", "FAA2", "PHM8", "FAA3", "AYR1", "GUT2", "YJU3", "TGL1", "GPT2", "ACC1", "FAA4", "ARE2", "YEH1", "YEH2", "FAA1", "LOA1", "DGK1", "TGL3", "ALE1", "PAH1", "LRO1", "DGA1", "TGL5"], "TGL5": ["SCT1", "CDS1", "ATG15", "SLC1", "TGL2", "DPP1", "LPP1", "FAA2", "PHM8", "AYR1", "GUT2", "YJU3", "TGL1", "GPT2", "TGL4", "YEH1", "YEH2", "PAH1", "FAA4", "TGL3", "LRO1", "ARE2", "FAA1", "DGK1", "LOA1", "ALE1", "DGA1"], "TIM17": ["CYT1", "YJU3", "RRN11", "SAL1"], "TMA17": ["FAS2", "FAS1"], "TOS2": ["FAT1", "KAR3"], "TSC13": ["IFA38", "ELO2", "TES1", "OLE1", "ELO1", "ELO3", "PHS1"], "UGA1": ["ACS1", "ALD5", "POX1", "ACS2", "ALD6", "ALD2", "HFD1", "ALD3", "ALD4"], "YEH1": ["FAT1", "ERG7", "TGL4", "LRO1", "DGA1", "ARE2", "TGL3", "TGL5"], "YEH2": ["YJU3", "TGL4", "DGA1", "LRO1", "ARE2", "TGL3", "TGL5"], "YFT2": ["LDB16", "LRO1", "DGA1", "PET10", "SEI1"], "YJU3": ["FAT1", "EHT1", "ATG15", "ADH7", "TGL2", "QCR7", "FAA2", "PHM8", "GPP2", "ROG1", "GUT1", "FAA3", "GPP1", "SIP4", "TIM17", "LPX1", "GDE1", "CYT1", "YEH2", "TGL1", "FMP30", "FAA4", "QCR2", "ADH6", "GCY1", "FAA1", "MGL2", "SAL1", "ACP1", "BUD22", "DGA1", "RRN11", "TGL5", "TGL4", "TGL3"]}
+
+var myChart = echarts.init(document.getElementById('main'));
+var cnt=document.querySelector('.cnt')
+
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+var num=1
+
+function newData(add) {
+    let onum=num
+    num+=add
+    if(num<0||num>10){
+        num=onum
+        alert('不能再多/少了')
+    }
+    let ns=Object.fromEntries(Object.entries(src).splice(
+        Object.entries(src).length-parseInt(Object.entries(src).length/10*num)
+    ));
+    let data=Object.keys(ns).map(i=>({name:i}))
+    let links=Object.entries(ns).map(
+        ([node,relations])=>relations.map(
+            i=>({
+                source:node,
+                target:i
+            })
+        )
+    ).flat()
+
+    let series={data,links}
+    myChart.setOption({series});
+    cnt.innerHTML=num
+}
+function less(){
+    console.log('less')
+    newData(-1)
+}
+function more(){
+    console.log('more')
+    newData(1)
+}
+document.querySelector('.less').addEventListener('click',less)
+document.querySelector('.more').addEventListener('click',more)
+let ns=Object.fromEntries(Object.entries(src).splice(
+    Object.entries(src).length-parseInt(Object.entries(src).length/10*num)
+))
+let data=Object.keys(ns).map(i=>({name:i}))
+let links=Object.entries(ns).map(
+    ([node,relations])=>relations.map(
+        i=>({
+            source:node,
+            target:i
+        })
+    )
+).flat()
+console.log(data,links)
+option = {
+    title: {
+        text: 'Basic Graph'
+    },
+    tooltip: {},
+    series: [
+    {
+        type: 'graph',
+        layout:'force',
+        symbolSize: 40,
+        zoom:1,
+        roam: true,
+        draggable: true,
+        edgeSymbol: ['circle', 'arrow'],
+        edgeSymbolSize: [4, 10],
+        label: {
+            show: true
+        },
+        data,
+        links,
+        lineStyle: {
+            opacity: 1,
+            width: 3,
+            curveness: 0,
+            type:'solid',
+            color: '#4b565b',
+        },
+        force: {
+            edgeLength: 200,
+            repulsion: 170,
+            gravity: 0.001
+          },
+    },
+    ]
+};
+
+option && myChart.setOption(option);
+
+
+    </script>
+</body>
+</html>
