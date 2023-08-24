@@ -205,8 +205,10 @@
         });
 
         graph.on('nodeselectchange', (e) => {
-            // console.log(e)
-            message.innerHTML=`选中 ${e.selectedItems.nodes[0].getID()} 节点`
+            if(e.selectedItems.nodes.length>0)
+                message.innerHTML=`选中 ${e.selectedItems.nodes[0].getID()} 节点`
+            else
+                message.innerHTML=''
         });
     </script>
 </body>
