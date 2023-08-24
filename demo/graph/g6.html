@@ -177,8 +177,9 @@
             graph.render()
         })
         function handleNodeClick(event) {
-            console.log(event)
+            // console.log(event)
             let nodeID=event?.item?.getID()
+            graph.setItemState(event.item, 'active', !event.item.getStates().find(i=>i==='active'));
             if(nodeID)
                 message.innerHTML=`选中 ${nodeID} 节点`
         }
@@ -186,10 +187,6 @@
         // listen to the node click event
         graph.on('node:touchstart',handleNodeClick)
         graph.on('node:click', handleNodeClick);
-
-        graph.on('node:mouseenter', (e) => {
-            graph.setItemState(e.item, 'active', true);
-        });
 
         graph.on('node:mouseleave', (e) => {
             graph.setItemState(e.item, 'active', false);
